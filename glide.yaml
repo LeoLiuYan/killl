@@ -1,0 +1,4 @@
+package: killl
+import:
+- package: github.com/ogier/pflag
+- package: github.com/sirupsen/logrus
