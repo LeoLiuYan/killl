@@ -15,7 +15,7 @@ const (
 	requestTimeoutKey = "KILLL_REQUEST_TIMEOUT"
 	keepAliveKey      = "KILLL_KEEPALIVE"
 	ringbufferKey     = "KILLL_RING_BUFFER"
-	mesosPrefixKey    = "KILLL_MESOS_PREFIX"
+	specificPrefixKey = "KILLL_MESOS_PREFIX"
 )
 
 type Config struct {
@@ -29,7 +29,7 @@ type Config struct {
 	requestTimeout   Interval
 	keepAlive        Interval
 	ringBuffer       uint32
-	mesosPrefix      string
+	specificPrefix   string
 }
 
 func NewConfig() (cfg *Config) {
@@ -56,7 +56,7 @@ func NewConfig() (cfg *Config) {
 	// ring buffer
 	cfg.ringBuffer = 512
 	// mesos prefix
-	cfg.mesosPrefix = "mesos"
+	cfg.specificPrefix = "mesos"
 
 	return
 }
@@ -72,5 +72,5 @@ func (cfg *Config) AddFlagSet(flagSet *pflag.FlagSet) {
 	flagSet.Var(&cfg.keepAlive, "keepalive", "keepalive time")
 	flagSet.BoolVarP(&cfg.Verbose, "verbose", "v", envBool(verboseKey, "true"), "verbose")
 	flagSet.Uint32Var(&cfg.ringBuffer, "ring_buffer", envUint32(ringbufferKey, 512), "ring buffer size")
-	flagSet.StringVar(&cfg.mesosPrefix, "mesos_prefix", env(mesosPrefixKey, "mesos"), "mesos prefix")
+	flagSet.StringVar(&cfg.specificPrefix, "prefix", env(specificPrefixKey, "mesos"), "specific prefix")
 }

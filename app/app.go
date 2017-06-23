@@ -19,12 +19,12 @@ var (
 	// todo: support label Selectors as Kubernetes
 	LabelsList     = make(map[string]string)
 	ContainerCache = make(map[string]struct{})
-	mesosPrefix string
+	mesosPrefix    string
 )
 
 func Run(ctx context.Context, config *Config) {
 	log.Debugf("config: %v", config)
-	mesosPrefix = config.mesosPrefix
+	mesosPrefix = config.specificPrefix
 	dockerCli, err := NewDockerCli(config)
 	if err != nil {
 		log.Fatalf("Run() error: %v", err)
