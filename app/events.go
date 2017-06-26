@@ -46,7 +46,7 @@ func HandleContainer(ctx context.Context, dockerCli DockerCli, container *ring2.
 	}
 	log.Infof("kill container: id(%s) name(%s)", container.ID, container.Name)
 	if err := dockerCli.Client().ContainerKill(ctx, container.ID, SIGNAL); err != nil {
-		return err
+		log.Errorf("kill container: id(%s) error", container.ID)
 	}
 	return dockerCli.Client().ContainerRemove(ctx, container.ID, types.ContainerRemoveOptions{false, false, true})
 }
