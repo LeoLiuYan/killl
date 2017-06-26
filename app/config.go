@@ -16,7 +16,7 @@ const (
 	requestTimeoutKey = "KILLL_REQUEST_TIMEOUT"
 	keepAliveKey      = "KILLL_KEEPALIVE"
 	ringbufferKey     = "KILLL_RING_BUFFER"
-	specificPrefixKey = "KILLL_MESOS_PREFIX"
+	specificPrefixKey = "KILLL_SPECIFIC_PREFIX"
 )
 
 type Config struct {
