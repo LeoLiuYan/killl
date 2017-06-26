@@ -8,6 +8,7 @@ const (
 	whitelistKey      = "KILLL_WHITELIST"
 	labelsKey         = "KILLL_LABELS"
 	imageCleanKey     = "KILLL_IMAGE_CLEAN"
+	imageBeforeKey    = "KILLL_IMAGE_BEFORE"
 	containerCheckKey = "KILLL_CONTAINER_CHECK"
 	verboseKey        = "KILLL_VERBOSE"
 	dockerHostKey     = "KILLL_DOCKER_HOST"
@@ -22,6 +23,7 @@ type Config struct {
 	whitelist        StringList
 	containerCheck   Interval
 	imageClean       Interval
+	imageBefore      Interval
 	labels           StringList
 	Verbose          bool
 	dockerHost       string
@@ -43,6 +45,8 @@ func NewConfig() (cfg *Config) {
 	cfg.containerCheck = envDuration(containerCheckKey, "10m")
 	// image clean
 	cfg.imageClean = envDuration(imageCleanKey, "1h")
+	// image befoe
+	cfg.imageBefore = envDuration(imageBeforeKey, "1440h")
 	// verbose
 	cfg.Verbose = true
 	// docker host
@@ -65,6 +69,7 @@ func (cfg *Config) AddFlagSet(flagSet *pflag.FlagSet) {
 	flagSet.VarP(&cfg.whitelist, "whitelist", "w", "whitelist for containers not kill by this app, by container name")
 	flagSet.VarP(&cfg.labels, "labels", "l", "labels for label the container which should run")
 	flagSet.Var(&cfg.imageClean, "image_clean", "interval for clean old image")
+	flagSet.Var(&cfg.imageBefore, "image_before", "clean image before this time, unit: h, m, s")
 	flagSet.Var(&cfg.containerCheck, "container_check", "interval for check container")
 	flagSet.StringVar(&cfg.dockerHost, "docker_host", env(dockerHostKey, "unix:///var/run/docker.sock"), "docker host")
 	flagSet.StringVar(&cfg.dockerAPIVersion, "docker_api", env(dockerAPIKey, "v1.28"), "docker api version")

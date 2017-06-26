@@ -64,3 +64,36 @@ func validContainer(name string, id string) bool {
 	}
 	return false
 }
+
+func CronImageClean(ctx context.Context, interval, before time.Duration, cli DockerCli) {
+	t := time.NewTicker(interval)
+	defer t.Stop()
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-t.C:
+			log.Debug("cron image clean")
+			if err := cleanImage(ctx, before, cli); err != nil {
+				log.Errorf("clean image error: %v", err)
+			}
+		}
+	}
+}
+
+func cleanImage(ctx context.Context, before time.Duration, cli DockerCli) error {
+	images, err := cli.Client().ImageList(ctx, types.ImageListOptions{All: true})
+	if err != nil {
+		return err
+	}
+	for _, image := range images {
+		tm := time.Unix(image.Created, 0)
+		if tm.Add(before).Before(time.Now()) {
+			log.Infof("remove image: id(%s)", image.ID)
+			if _, err := cli.Client().ImageRemove(ctx, image.ID, types.ImageRemoveOptions{}); err != nil {
+				log.Errorf("remove image error: %v", err)
+			}
+		}
+	}
+	return nil
+}

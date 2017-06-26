@@ -24,6 +24,7 @@ var (
 
 func Run(ctx context.Context, config *Config) {
 	log.Debugf("config: %v", config)
+	SpecificPrefix = config.specificPrefix
 	dockerCli, err := NewDockerCli(config)
 	if err != nil {
 		log.Fatalf("Run() error: %v", err)
@@ -33,8 +34,8 @@ func Run(ctx context.Context, config *Config) {
 	if err != nil {
 		log.Fatalf("connect to daemon error: %v", err)
 	}
-	SpecificPrefix = config.specificPrefix
 	go CronCheckContainers(ctx, time.Duration(config.containerCheck), dockerCli)
+	go CronImageClean(ctx, time.Duration(config.imageClean), time.Duration(config.imageBefore), dockerCli)
 	initWhiteList(config)
 	initLabelsList(config)
 	// ring buffer
