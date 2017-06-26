@@ -19,7 +19,7 @@ func RunEvents(ctx context.Context, dockercli DockerCli, opts types.EventsOption
 func HandleEvent(event events.Message, ring *ring2.Ring) error {
 	if event.Action == "create" &&
 		!ExistInWhiteList(event.Actor.Attributes["name"]) &&
-		!IsMesosPrefix(event.Actor.Attributes["name"]) {
+		!HasSpecificPrefix(event.Actor.Attributes["name"]) {
 		payload, err := ring.Set()
 		if err != nil {
 			return err
@@ -40,7 +40,7 @@ func HandleContainer(ctx context.Context, dockerCli DockerCli, container *ring2.
 		if ExistLabelsList(k, v) {
 			// cache
 			log.Infof("cache container: id(%s) name(%s)", container.ID, container.Name)
-			ContainerCache[container.ID] = struct{}{}
+			ContainerCache.put(container.ID)
 			return nil
 		}
 	}

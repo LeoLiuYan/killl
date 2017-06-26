@@ -18,13 +18,12 @@ var (
 	Whitelist = make(map[string]struct{})
 	// todo: support label Selectors as Kubernetes
 	LabelsList     = make(map[string]string)
-	ContainerCache = make(map[string]struct{})
-	mesosPrefix    string
+	SpecificPrefix string
+	ContainerCache = NewCache()
 )
 
 func Run(ctx context.Context, config *Config) {
 	log.Debugf("config: %v", config)
-	mesosPrefix = config.specificPrefix
 	dockerCli, err := NewDockerCli(config)
 	if err != nil {
 		log.Fatalf("Run() error: %v", err)
@@ -34,6 +33,8 @@ func Run(ctx context.Context, config *Config) {
 	if err != nil {
 		log.Fatalf("connect to daemon error: %v", err)
 	}
+	SpecificPrefix = config.specificPrefix
+	go CronCheckContainers(ctx, time.Duration(config.containerCheck), dockerCli)
 	initWhiteList(config)
 	initLabelsList(config)
 	// ring buffer
@@ -120,12 +121,13 @@ func ExistInWhiteList(name string) bool {
 }
 
 func ExistInContainerCache(containerID string) bool {
-	if _, ok := ContainerCache[containerID]; !ok {
-		return false
-	}
-	return true
+	return ContainerCache.exist(containerID)
 }
 
-func IsMesosPrefix(name string) bool {
-	return strings.HasPrefix(name, mesosPrefix)
+func HasSpecificPrefix(name string) bool {
+	return strings.HasPrefix(name, SpecificPrefix)
+}
+
+func ClearCache(now map[string]struct{}) {
+	ContainerCache.clear(now)
 }

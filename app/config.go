@@ -40,7 +40,7 @@ func NewConfig() (cfg *Config) {
 	// labels
 	cfg.labels = envStringList(labelsKey, "")
 	// container check
-	cfg.containerCheck = envDuration(containerCheckKey, "1m")
+	cfg.containerCheck = envDuration(containerCheckKey, "10m")
 	// image clean
 	cfg.imageClean = envDuration(imageCleanKey, "1h")
 	// verbose
@@ -72,5 +72,5 @@ func (cfg *Config) AddFlagSet(flagSet *pflag.FlagSet) {
 	flagSet.Var(&cfg.keepAlive, "keepalive", "keepalive time")
 	flagSet.BoolVarP(&cfg.Verbose, "verbose", "v", envBool(verboseKey, "true"), "verbose")
 	flagSet.Uint32Var(&cfg.ringBuffer, "ring_buffer", envUint32(ringbufferKey, 512), "ring buffer size")
-	flagSet.StringVar(&cfg.specificPrefix, "prefix", env(specificPrefixKey, "mesos"), "specific prefix")
+	flagSet.StringVar(&cfg.specificPrefix, "prefix", env(specificPrefixKey, "mesos"), "specific prefix which container name that not killed by this app")
 }
